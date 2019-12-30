@@ -17,7 +17,15 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "ngx-interactive-edit": [
+        "dist/ngx-interactive-edit"
+      ],
+      "ngx-interactive-edit/*": [
+        "dist/ngx-interactive-edit/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
