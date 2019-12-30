@@ -302,7 +302,7 @@
           <button type="button" (click)="ctrl.edit()">Edit</button>
       </div>
       <div *inputEdit="copy; let ctrl = controller">
-        <input type="text" name="copy" [(ngModel)]="copy">
+        <input type="text" name="copy" [(ngModel)]="copy" (keyup.enter)="ctrl.confirm()">
         <button type="button" (click)="ctrl.confirm()">OK</button>
         <button type="button" (click)="ctrl.cancel()">Cancel</button>
       </div>
