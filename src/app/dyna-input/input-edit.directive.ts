@@ -49,7 +49,6 @@ export class InputEditDirective implements OnInit, DoCheck {
       this.prevMode = this.dynaInput.currentMode;
       this.enforceView();
     }
-    console.log('fire edit directive');
   }
   private enforceView() {
     if (this.dynaInput.currentMode === Modes.edit) {

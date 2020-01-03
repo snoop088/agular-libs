@@ -28,7 +28,6 @@ export class InputViewDirective implements OnInit, DoCheck {
       this.prevMode = this.dynaInput.currentMode;
       this.enforceView();
     }
-    console.log('fire view directive');
   }
   private enforceView() {
     if (this.dynaInput.currentMode === Modes.view) {
