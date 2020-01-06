@@ -310,9 +310,10 @@
   </div>
   <div class="menu">
     some item is here
-    <se-submenu [options]="{position: 'top'}">
-      <div seSubmenuItem>meny 1</div>
-      <div seSubmenuItem>meny 2</div>
+    <span (click)="state = 'opened'">open</span>
+    <se-submenu [options]="{position: 'top'}" [submenuState]="state">
+      <se-submenu-item>menu 1</se-submenu-item>
+      <se-submenu-item>menu 2</se-submenu-item>
     </se-submenu>
   </div>
   

@@ -1,10 +1,13 @@
-import { Directive } from '@angular/core';
+import { Directive, ElementRef } from '@angular/core';
 
 @Directive({
   selector: '[seSubmenuItem]'
 })
 export class SeSubmItemDirective {
 
-  constructor() { }
+  constructor(private el: ElementRef) { }
+  get elementRef(): ElementRef {
+    return this.el;
+  }
 
 }

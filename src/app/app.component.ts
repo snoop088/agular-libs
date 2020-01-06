@@ -8,6 +8,7 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'structinput';
   copy = 'This is a copy example';
+  state = 'closed';
   public onCancel(str) {
     console.log('emitted ' + str);
     this.copy = str;
