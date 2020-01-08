@@ -311,12 +311,13 @@
   </div>
   <div class="menu">
     some item is here
-    <span (click)="state = 'opened'">open</span>
+    <span (click)="subMenu.showSubmenu()">open</span>
     |||
-    <span (click)="state ='closed'">close</span>
-    <se-submenu
-      [options]="{position: 'top', animation: 'staggered-fade', itemTiming: 0.25, itemDelay: 0.1, easing: 'power1.inOut'}"
-      [submenuState]="state">
+    <span (click)="subMenu.hideSubmenu()">close</span>
+    |||
+    <span (click)="subMenu.toggleSubmenu()">toggle</span>
+    <se-submenu #subMenu
+      [options]="{position: 'top', animation: 'staggered-fade', itemTiming: 0.25, itemDelay: 0.1, easing: 'power1.inOut'}">
       <div class="menu-item" seSubmenuItem>menu 1</div>
       <div class="menu-item" seSubmenuItem>menu 2</div>
     </se-submenu>

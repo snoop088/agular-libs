@@ -33,16 +33,16 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
   private _options: SeSubmenusOptions;
   private isAnimating = false;
 
-  @Input() set submenuState(state: SubmenuState) {
-    console.log('click', state);
-    if (!this.isAnimating && state !== this._submenuState) {
-      if (state === 'closed') {
-        this.hideSubmenu();
-      } else if (state === 'opened') {
-        this.showSubmenu();
-      }
-    }
-  }
+  // @Input() set submenuState(state: SubmenuState) {
+  //   console.log('click', state);
+  //   if (!this.isAnimating && state !== this._submenuState) {
+  //     if (state === 'closed') {
+  //       this.hideSubmenu();
+  //     } else if (state === 'opened') {
+  //       this.showSubmenu();
+  //     }
+  //   }
+  // }
   get submenuState(): SubmenuState {
     return this._submenuState;
   }
@@ -63,15 +63,28 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
   ngAfterContentInit() {
     this.animationSetup();
   }
-  private showSubmenu() {
-    this._submenuState = 'opened';
-    this.isAnimating = true;
-    this.tl.play();
-
+  public showSubmenu() {
+    console.log('show', this.isAnimating);
+    if (!this.isAnimating && this._submenuState !== 'opened') {
+      this._submenuState = 'opened';
+      this.isAnimating = true;
+      this.changeDetectorRef.markForCheck();
+      this.tl.play();
+    }
   }
-  private hideSubmenu() {
-    this.isAnimating = true;
-    this.tl.reverse();
+  public hideSubmenu() {
+    console.log('hide', this.isAnimating);
+    if (!this.isAnimating && this._submenuState !== 'closed') {
+      this.isAnimating = true;
+      this.changeDetectorRef.markForCheck();
+      this.tl.reverse();
+    }
+  }
+  public toggleSubmenu() {
+    console.log('toggle', this.isAnimating);
+    if (!this.isAnimating) {
+      this._submenuState === 'closed' ? this.showSubmenu() : this.hideSubmenu();
+    }
   }
   private getMenuItemsElements(): HTMLElement[] {
     return this.menuItemsQueryList.map(item => item.elementRef.nativeElement);
@@ -91,11 +104,6 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
     };
     switch (this._options.position) {
       case 'top': {
-        // this.tl
-        //   .from(this.getMenuItemsElements(),
-        //     Object.assign(animFrom, { yPercent: this._options.animation === 'staggered-move' ? -50 : 0 }), 0)
-        //   .to(this.getMenuItemsElements(), animTo, '<');
-
         this.tl.fromTo(this.getMenuItemsElements(),
           Object.assign(animFrom, { yPercent: this._options.animation === 'staggered-move' ? -50 : 0 }),
           animTo, 0
@@ -110,11 +118,8 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
         break;
       }
     }
-    // this.tl.eventCallback('onComplete', this.onCompleteHandler, ['opening', this.ngZone]);
-    // this.tl.eventCallback('onReverseComplete', this.onCompleteHandler, ['closing'], this);
   }
   private onCompleteHandler(transition) {
-    console.log(transition);
     this.isAnimating = false;
     if (transition === 'closing') {
       this._submenuState = 'closed';
@@ -122,11 +127,6 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
       this._submenuState = 'opened';
     }
     this.changeDetectorRef.markForCheck();
-    console.log(this._submenuState, this.isAnimating);
-    // this.ngZone.run(() => {
-
-    // });
-
   }
 
 }
