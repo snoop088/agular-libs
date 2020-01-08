@@ -3,4 +3,5 @@ export interface SeSubmenusOptions {
     animation: 'staggered-fade' | 'staggered-move' | 'non-staggered';
     itemTiming: number;
     itemDelay: number;
+    easing: string;
 }

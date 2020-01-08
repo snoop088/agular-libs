@@ -3,11 +3,11 @@
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     align-items: flex-end;
-    border: 1px solid red;
 }
 :host(.position-top) {
     transform: translateY(-100%);
 }
-:host(.position-top) .menu-item {
-    opacity: 0;
+:host(.position-left) {
+    transform: translateX(-100%);
+    flex-direction: column;
 }

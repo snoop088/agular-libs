@@ -1,59 +1,132 @@
-import { Component, Input, OnInit, ElementRef, Renderer2, ContentChildren, QueryList, AfterContentInit} from '@angular/core';
+import {
+  Component, Input, OnInit, ElementRef, Renderer2, ContentChildren,
+  QueryList, ChangeDetectionStrategy, AfterContentInit, ChangeDetectorRef
+} from '@angular/core';
 import { SeSubmenusOptions } from '../se-submenus-options';
 import { gsap } from 'gsap';
-import { SeSubmItemDirective } from '../se-subm-item.directive';
-import { SeSubmenuItemComponent } from '../se-submenu-item/se-submenu-item.component';
+import { SeSubmenuItemDirective } from '../se-submenu-item.directive';
 
 export type SubmenuState = 'opened' | 'closed';
 @Component({
   selector: 'se-submenu',
   templateUrl: './se-submenu.component.html',
-  styleUrls: ['./se-submenu.component.css']
+  styleUrls: ['./se-submenu.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SeSubmenuComponent implements OnInit, AfterContentInit {
 
-  @Input() options: SeSubmenusOptions;
-  
-  @ContentChildren(SeSubmenuItemComponent) menuItemsQueryList: QueryList<SeSubmenuItemComponent>;
+  @Input() set options(options: SeSubmenusOptions) {
+    this._options = Object.assign({
+      position: 'top',
+      animation: 'staggered-fade',
+      itemTiming: 0.25,
+      itemDelay: 0.25,
+      easing: 'power1.out'
+    }, options);
+    this.renderer.addClass(this.container.nativeElement, 'position-' + this._options.position);
+  }
 
-  private tl = gsap.timeline();
-  private menuItems: SeSubmenuItemComponent[];
+  @ContentChildren(SeSubmenuItemDirective) menuItemsQueryList: QueryList<SeSubmenuItemDirective>;
+
+  private tl: TimelineMax;
   private _submenuState: SubmenuState;
+  private _options: SeSubmenusOptions;
+  private isAnimating = false;
 
   @Input() set submenuState(state: SubmenuState) {
-    if (state === 'closed') {
-      this.hideSubmenu();
-    } else if (state === 'opened') {
-      this.showSubmenu();
+    console.log('click', state);
+    if (!this.isAnimating && state !== this._submenuState) {
+      if (state === 'closed') {
+        this.hideSubmenu();
+      } else if (state === 'opened') {
+        this.showSubmenu();
+      }
     }
   }
   get submenuState(): SubmenuState {
     return this._submenuState;
   }
-  constructor( private container: ElementRef, private renderer: Renderer2 ) {
+  constructor(private container: ElementRef, private renderer: Renderer2, private changeDetectorRef: ChangeDetectorRef) {
     this._submenuState = 'closed';
+    this.tl = gsap.timeline({
+      paused: true,
+      onComplete: this.onCompleteHandler,
+      onReverseComplete: this.onCompleteHandler,
+      onCompleteParams: ['opening'],
+      onReverseCompleteParams: ['closing'],
+      callbackScope: this
+    });
   }
 
   ngOnInit() {
-    this.renderer.addClass(this.container.nativeElement, 'position-' + this.options.position);
   }
   ngAfterContentInit() {
-    this.menuItemsQueryList.forEach(menuItem => {
-      console.log(menuItem);
-      this.renderer.addClass(menuItem.elementRef.nativeElement, 'menu-item');
-      // this.tl.to(menuItem.elementRef.nativeElement, {duration: 1, x: 200, y: 100});
-    });
+    this.animationSetup();
   }
   private showSubmenu() {
     this._submenuState = 'opened';
-    this.tl.to(this.getMenuItemsElements(), {duration: 1, x: 200, y: 100, stagger: 1});
+    this.isAnimating = true;
+    this.tl.play();
+
   }
   private hideSubmenu() {
-    this._submenuState = 'closed';
-
+    this.isAnimating = true;
+    this.tl.reverse();
   }
   private getMenuItemsElements(): HTMLElement[] {
     return this.menuItemsQueryList.map(item => item.elementRef.nativeElement);
+  }
+  private animationSetup() {
+    const staggerTime = this._options.animation === 'non-staggered' ? 0 : this._options.itemDelay;
+    const animFrom = {
+      duration: this._options.itemTiming,
+      stagger: staggerTime,
+      ease: this._options.easing
+    };
+    const animTo = {
+      opacity: 1,
+      duration: this._options.itemTiming,
+      stagger: staggerTime,
+      ease: this._options.easing
+    };
+    switch (this._options.position) {
+      case 'top': {
+        // this.tl
+        //   .from(this.getMenuItemsElements(),
+        //     Object.assign(animFrom, { yPercent: this._options.animation === 'staggered-move' ? -50 : 0 }), 0)
+        //   .to(this.getMenuItemsElements(), animTo, '<');
+
+        this.tl.fromTo(this.getMenuItemsElements(),
+          Object.assign(animFrom, { yPercent: this._options.animation === 'staggered-move' ? -50 : 0 }),
+          animTo, 0
+        );
+        break;
+      }
+      case 'left': {
+        this.tl
+          .from(this.getMenuItemsElements(),
+            Object.assign(animFrom, { xPercent: this._options.animation === 'staggered-move' ? -50 : 0 }), 0)
+          .to(this.getMenuItemsElements(), animTo, '<');
+        break;
+      }
+    }
+    // this.tl.eventCallback('onComplete', this.onCompleteHandler, ['opening', this.ngZone]);
+    // this.tl.eventCallback('onReverseComplete', this.onCompleteHandler, ['closing'], this);
+  }
+  private onCompleteHandler(transition) {
+    console.log(transition);
+    this.isAnimating = false;
+    if (transition === 'closing') {
+      this._submenuState = 'closed';
+    } else if (transition === 'opening') {
+      this._submenuState = 'opened';
+    }
+    this.changeDetectorRef.markForCheck();
+    console.log(this._submenuState, this.isAnimating);
+    // this.ngZone.run(() => {
+
+    // });
+
   }
 
 }
