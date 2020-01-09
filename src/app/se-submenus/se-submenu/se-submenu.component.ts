@@ -16,13 +16,9 @@ export type SubmenuState = 'opened' | 'closed';
 export class SeSubmenuComponent implements OnInit, AfterContentInit {
 
   @Input() set options(options: SeSubmenusOptions) {
-    this._options = Object.assign({
-      position: 'top',
-      animation: 'staggered-fade',
-      itemTiming: 0.25,
-      itemDelay: 0.25,
-      easing: 'power1.out'
-    }, options);
+    if (options) {
+      this._options = Object.assign(this._options, options);
+    }
     this.renderer.addClass(this.container.nativeElement, 'position-' + this._options.position);
   }
 
@@ -33,16 +29,6 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
   private _options: SeSubmenusOptions;
   private isAnimating = false;
 
-  // @Input() set submenuState(state: SubmenuState) {
-  //   console.log('click', state);
-  //   if (!this.isAnimating && state !== this._submenuState) {
-  //     if (state === 'closed') {
-  //       this.hideSubmenu();
-  //     } else if (state === 'opened') {
-  //       this.showSubmenu();
-  //     }
-  //   }
-  // }
   get submenuState(): SubmenuState {
     return this._submenuState;
   }
@@ -56,32 +42,49 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
       onReverseCompleteParams: ['closing'],
       callbackScope: this
     });
+    this._options = {
+      position: 'top',
+      animation: 'staggered-fade',
+      itemTiming: 0.25,
+      itemDelay: 0.25,
+      scaleFrom: 0.8,
+      moveFrom: -33,
+      easing: 'power1.out'
+    };
   }
 
   ngOnInit() {
   }
   ngAfterContentInit() {
-    this.animationSetup();
+    if (this._options.animation === 'non-animated') {
+      this.menuItemsQueryList.forEach(item => this.renderer.setStyle(item.elementRef.nativeElement, 'opacity', 1));
+    } else {
+      this.animationSetup();
+    }
+    this.renderer.addClass(this.container.nativeElement, 'position-' + this._options.position);
   }
   public showSubmenu() {
-    console.log('show', this.isAnimating);
     if (!this.isAnimating && this._submenuState !== 'opened') {
       this._submenuState = 'opened';
-      this.isAnimating = true;
+      if (this._options.animation !== 'non-animated') {
+        this.isAnimating = true;
+        this.tl.play();
+      }
       this.changeDetectorRef.markForCheck();
-      this.tl.play();
     }
   }
   public hideSubmenu() {
-    console.log('hide', this.isAnimating);
     if (!this.isAnimating && this._submenuState !== 'closed') {
-      this.isAnimating = true;
+      if (this._options.animation !== 'non-animated') {
+        this.isAnimating = true;
+        this.tl.reverse();
+      } else {
+        this._submenuState = 'closed';
+      }
       this.changeDetectorRef.markForCheck();
-      this.tl.reverse();
     }
   }
   public toggleSubmenu() {
-    console.log('toggle', this.isAnimating);
     if (!this.isAnimating) {
       this._submenuState === 'closed' ? this.showSubmenu() : this.hideSubmenu();
     }
@@ -102,18 +105,21 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
       stagger: staggerTime,
       ease: this._options.easing
     };
+    const moveAnim = this._options.animation === 'staggered-move' ? this._options.moveFrom : 0;
+    const scaleAnim = this._options.animation === 'staggered-scale' ? this._options.scaleFrom : 1;
+
     switch (this._options.position) {
       case 'top': {
-        this.tl.fromTo(this.getMenuItemsElements(),
-          Object.assign(animFrom, { yPercent: this._options.animation === 'staggered-move' ? -50 : 0 }),
-          animTo, 0
-        );
+        this.tl
+          .from(this.getMenuItemsElements(),
+            Object.assign(animFrom, { yPercent: moveAnim, scaleX: scaleAnim, scaleY: scaleAnim }), 0)
+          .to(this.getMenuItemsElements(), animTo, '<');
         break;
       }
       case 'left': {
         this.tl
           .from(this.getMenuItemsElements(),
-            Object.assign(animFrom, { xPercent: this._options.animation === 'staggered-move' ? -50 : 0 }), 0)
+            Object.assign(animFrom, { xPercent: moveAnim, scaleX: scaleAnim, scaleY: scaleAnim }), 0)
           .to(this.getMenuItemsElements(), animTo, '<');
         break;
       }
