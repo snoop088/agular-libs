@@ -5,6 +5,7 @@
     position: relative;
     margin-left: 80px;
     margin-top: 60px;
+    display: inline-block;
 }
 .menu-item {
     padding: 3px;

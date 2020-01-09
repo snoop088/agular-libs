@@ -15,13 +15,14 @@ export type SubmenuState = 'opened' | 'closed';
 })
 export class SeSubmenuComponent implements OnInit, AfterContentInit {
 
+  // Options Input to set up the SubMenu behaviour
   @Input() set options(options: SeSubmenusOptions) {
     if (options) {
       this._options = Object.assign(this._options, options);
     }
     this.renderer.addClass(this.container.nativeElement, 'position-' + this._options.position);
   }
-
+  // Content Children are used to perform various operations on the SubMenu Items
   @ContentChildren(SeSubmenuItemDirective) menuItemsQueryList: QueryList<SeSubmenuItemDirective>;
 
   private tl: TimelineMax;
@@ -33,6 +34,10 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
     return this._submenuState;
   }
   constructor(private container: ElementRef, private renderer: Renderer2, private changeDetectorRef: ChangeDetectorRef) {
+    // Setting up default values
+    // SubMenu is closed on page load
+    // Animation timeline setup
+    // Default options, if no options are supplied
     this._submenuState = 'closed';
     this.tl = gsap.timeline({
       paused: true,
@@ -48,7 +53,7 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
       itemTiming: 0.25,
       itemDelay: 0.25,
       scaleFrom: 0.8,
-      moveFrom: -33,
+      moveFrom: 33,
       easing: 'power1.out'
     };
   }
@@ -56,13 +61,17 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
   ngOnInit() {
   }
   ngAfterContentInit() {
+    // Wait until component initialises the SubMenu Items to perform actions
+    // If the menu is non-animated, the _submenuState is used to control the visibility of the SubMenu
     if (this._options.animation === 'non-animated') {
       this.menuItemsQueryList.forEach(item => this.renderer.setStyle(item.elementRef.nativeElement, 'opacity', 1));
     } else {
       this.animationSetup();
     }
+    // Correct class to position the SubMenu to its parent component.
     this.renderer.addClass(this.container.nativeElement, 'position-' + this._options.position);
   }
+  // Public method as interface to the SubMenu - it displays the SubMenu
   public showSubmenu() {
     if (!this.isAnimating && this._submenuState !== 'opened') {
       this._submenuState = 'opened';
@@ -73,6 +82,7 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
       this.changeDetectorRef.markForCheck();
     }
   }
+  // Public method as interface to the SubMenu - it hides the SubMenu
   public hideSubmenu() {
     if (!this.isAnimating && this._submenuState !== 'closed') {
       if (this._options.animation !== 'non-animated') {
@@ -84,6 +94,7 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
       this.changeDetectorRef.markForCheck();
     }
   }
+  // Public method as interface to the SubMenu - it toggles the SubMenu shown/ hidden
   public toggleSubmenu() {
     if (!this.isAnimating) {
       this._submenuState === 'closed' ? this.showSubmenu() : this.hideSubmenu();
@@ -92,6 +103,7 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
   private getMenuItemsElements(): HTMLElement[] {
     return this.menuItemsQueryList.map(item => item.elementRef.nativeElement);
   }
+  // GSAP animation setup
   private animationSetup() {
     const staggerTime = this._options.animation === 'non-staggered' ? 0 : this._options.itemDelay;
     const animFrom = {
@@ -105,26 +117,32 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
       stagger: staggerTime,
       ease: this._options.easing
     };
-    const moveAnim = this._options.animation === 'staggered-move' ? this._options.moveFrom : 0;
+    const moveAnim = (): number => {
+      const distance = this._options.animation === 'staggered-move' ? this._options.moveFrom : 0;
+      return this._options.position === 'left' || this._options.position === 'top' ? -distance : distance;
+    };
     const scaleAnim = this._options.animation === 'staggered-scale' ? this._options.scaleFrom : 1;
 
     switch (this._options.position) {
-      case 'top': {
+      case 'top':
+      case 'bottom': {
         this.tl
           .from(this.getMenuItemsElements(),
-            Object.assign(animFrom, { yPercent: moveAnim, scaleX: scaleAnim, scaleY: scaleAnim }), 0)
+            Object.assign(animFrom, { yPercent: moveAnim(), scaleX: scaleAnim, scaleY: scaleAnim }), 0)
           .to(this.getMenuItemsElements(), animTo, '<');
         break;
       }
-      case 'left': {
+      case 'left':
+      case 'right': {
         this.tl
           .from(this.getMenuItemsElements(),
-            Object.assign(animFrom, { xPercent: moveAnim, scaleX: scaleAnim, scaleY: scaleAnim }), 0)
+            Object.assign(animFrom, { xPercent: moveAnim(), scaleX: scaleAnim, scaleY: scaleAnim }), 0)
           .to(this.getMenuItemsElements(), animTo, '<');
         break;
       }
     }
   }
+  // OnComplete handler for the timeline to set various states and manage when buttons work
   private onCompleteHandler(transition) {
     this.isAnimating = false;
     if (transition === 'closing') {

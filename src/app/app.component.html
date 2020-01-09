@@ -317,7 +317,7 @@
     |||
     <span (click)="subMenu.toggleSubmenu()">toggle</span>
     <se-submenu #subMenu
-      [options]="{position: 'top', animation: 'staggered-fade', itemTiming: 0.25, itemDelay: 0.1, easing: 'power1.inOut'}">
+      [options]="subOptions">
       <div class="menu-item" seSubmenuItem>menu 1</div>
       <div class="menu-item" seSubmenuItem>menu 2</div>
     </se-submenu>
