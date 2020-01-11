@@ -105,42 +105,45 @@ export class SeSubmenuComponent implements OnInit, AfterContentInit {
   }
   // GSAP animation setup
   private animationSetup() {
-    const staggerTime = this._options.animation === 'non-staggered' ? 0 : this._options.itemDelay;
-    const animFrom = {
-      duration: this._options.itemTiming,
-      stagger: staggerTime,
-      ease: this._options.easing
+    const moveDir = {
+      left: {
+        axis: 'xPercent',
+        multiplier: -1
+      },
+      right: {
+        axis: 'xPercent',
+        multiplier: 1
+      },
+      top: {
+        axis: 'yPercent',
+        multiplier: -1
+      },
+      bottom: {
+        axis: 'yPercent',
+        multiplier: 1
+      }
     };
+    const staggerTime = this._options.animation === 'non-staggered' ? 0 : this._options.itemDelay;
     const animTo = {
       opacity: 1,
       duration: this._options.itemTiming,
       stagger: staggerTime,
       ease: this._options.easing
     };
-    const moveAnim = (): number => {
-      const distance = this._options.animation === 'staggered-move' ? this._options.moveFrom : 0;
-      return this._options.position === 'left' || this._options.position === 'top' ? -distance : distance;
-    };
+    const moveAnim =
+      moveDir[this._options.position].multiplier * (this._options.animation === 'staggered-move' ? this._options.moveFrom : 0);
     const scaleAnim = this._options.animation === 'staggered-scale' ? this._options.scaleFrom : 1;
-
-    switch (this._options.position) {
-      case 'top':
-      case 'bottom': {
-        this.tl
-          .from(this.getMenuItemsElements(),
-            Object.assign(animFrom, { yPercent: moveAnim(), scaleX: scaleAnim, scaleY: scaleAnim }), 0)
-          .to(this.getMenuItemsElements(), animTo, '<');
-        break;
-      }
-      case 'left':
-      case 'right': {
-        this.tl
-          .from(this.getMenuItemsElements(),
-            Object.assign(animFrom, { xPercent: moveAnim(), scaleX: scaleAnim, scaleY: scaleAnim }), 0)
-          .to(this.getMenuItemsElements(), animTo, '<');
-        break;
-      }
-    }
+    const animFrom = {
+      duration: this._options.itemTiming,
+      stagger: staggerTime,
+      ease: this._options.easing,
+      scaleX: scaleAnim,
+      scaleY: scaleAnim,
+      [moveDir[this._options.position].axis]: moveAnim
+    };
+    this.tl
+      .from(this.getMenuItemsElements(), animFrom, 0)
+      .to(this.getMenuItemsElements(), animTo, '<');
   }
   // OnComplete handler for the timeline to set various states and manage when buttons work
   private onCompleteHandler(transition) {

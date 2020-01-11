@@ -10,12 +10,12 @@ export class AppComponent {
   title = 'structinput';
   copy = 'This is a copy example';
   subOptions: SeSubmenusOptions = {
-    position: 'bottom',
-    animation: 'staggered-move',
-    itemTiming: 0.5,
+    position: 'top',
+    animation: 'staggered-scale',
+    itemTiming: 0.25,
     itemDelay: 0.1,
     easing: 'power3.in',
-    moveFrom: 100,
+    moveFrom: 33,
     scaleFrom: 1.3
   };
   public onCancel(str) {
