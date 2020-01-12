@@ -11,7 +11,7 @@ export class AppComponent {
   copy = 'This is a copy example';
   subOptions: SeSubmenusOptions = {
     position: 'top',
-    animation: 'staggered-scale',
+    animation: 'staggered-move',
     itemTiming: 0.25,
     itemDelay: 0.1,
     easing: 'power3.in',

@@ -24,6 +24,12 @@
       ],
       "ngx-interactive-edit/*": [
         "dist/ngx-interactive-edit/*"
+      ],
+      "se-simpl-submenu": [
+        "dist/se-simpl-submenu"
+      ],
+      "se-simpl-submenu/*": [
+        "dist/se-simpl-submenu/*"
       ]
     }
   },

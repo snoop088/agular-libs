@@ -155,6 +155,41 @@
           }
         }
       }
+    },
+    "se-simpl-submenu": {
+      "projectType": "library",
+      "root": "projects/se-simpl-submenu",
+      "sourceRoot": "projects/se-simpl-submenu/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/se-simpl-submenu/tsconfig.lib.json",
+            "project": "projects/se-simpl-submenu/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/se-simpl-submenu/src/test.ts",
+            "tsConfig": "projects/se-simpl-submenu/tsconfig.spec.json",
+            "karmaConfig": "projects/se-simpl-submenu/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/se-simpl-submenu/tsconfig.lib.json",
+              "projects/se-simpl-submenu/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }},
   "defaultProject": "structinput"
 }

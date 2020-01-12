@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { DynaInputModule } from './dyna-input/dyna-input.module';
-import { SeSubmenusModule } from './se-submenus/se-submenus.module';
+// import { SeSubmenusModule } from './se-submenus/se-submenus.module';
+import { SeSimplsubmenuModule} from 'se-simpl-submenu';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,7 @@ import { SeSubmenusModule } from './se-submenus/se-submenus.module';
     BrowserModule,
     FormsModule,
     DynaInputModule,
-    SeSubmenusModule
+    SeSimplsubmenuModule
   ],
   providers: [],
   bootstrap: [AppComponent]
