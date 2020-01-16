@@ -1,6 +1,11 @@
 {
   "name": "se-simpl-submenu",
   "version": "0.1.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snoop088/agular-libs"
+  },
   "peerDependencies": {
     "@angular/common": "^8.2.9",
     "@angular/core": "^8.2.9",

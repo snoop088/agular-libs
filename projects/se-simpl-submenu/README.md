@@ -1,4 +1,4 @@
-# SeSimplsubmenu
+# SeSimplSubmenu
 
 This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.2.9.
 
@@ -30,9 +30,39 @@ This library was generated with [Angular CLI](https://github.com/angular/angular
     </se-simpl-submenu>
   </div>
   ```
+  where options are
+  ```Javascript
+  subOptions: SeSubmenusOptions = {
+    position: 'top',
+    animation: 'staggered-move',
+    itemTiming: 0.25,
+    itemDelay: 0.1,
+    easing: 'power3.in',
+    moveFrom: 33,
+    scaleFrom: 1.3
+  };
+  ```
 
 ## Options
- > Add the options here
+ > Use the options input `[options]` to specify the submenu behaviour. It takes an object with the following configuration
+
+- `position:`
+  - **top**: displays the submenu on top of its parent container and lines the items in a row. Default value.
+  - **bottom**: displays the submenu below its parent container and lines the items in a row
+  - **right**: displays the submenu to the right of its parent container and lines the items in a column
+  - **left**: displays the submenu to the left of its parent container and lines the items in a column
+- `animation:`
+  - **staggered-fade**: displays the submenu items one by one by fading them in. Default value.
+  - **staggered-move**: displays the submenu items one by one by fading them in and moving them
+  - **staggered-scale**: displays the submenu items one by one by fading them in and scaling them
+  - **non-staggered**: displays the submenu items all together by fading them
+  - **non-animated**: displays the submenu items without transition
+- `itemTiming:` takes a number to configure the transition time in seconds of each submenu item. Default: 0.25
+- `itemDelay:` takes a number to configure the delay in seconds of each submenu item. Used for the staggered animatons. Default: 0.25
+- `easing:` takes a gsap easing string. Only supports gsap 3 core eases. Default: power1.out
+- `scaleFrom:` takes a number to configure the relative scale for the staggered-scale animation. 0 being from 0 scale to 1 being no scaling. Default: 0.8.
+- `moveFrom:` takes a number to configure the movement distance in percentage relation to the submenu's own dimension. Default: 33.
+
 
 ## Code scaffolding
 
